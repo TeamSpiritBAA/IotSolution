@@ -37,7 +37,7 @@ def insert_projectdata(message):
 
     query = "INSERT INTO PROJECTDATA (gpsx, gpsy, humidity, temperature, lighting, ts) VALUES (%s, %s, %s, %s, %s, %s);"
     query2 = "DELETE FROM PROJECTDATA"
-    data =  (10123123, 10.4, 1, 5, 10123123, datetime.now())
+    data =  (12345, 1234, 1, 5, 10123123, datetime.now())
 
     conn = None
     try:
@@ -61,5 +61,4 @@ def insert_projectdata(message):
 
 
 if __name__ == '__main__':
-     # connect()
      insert_projectdata('Goodnight!')
