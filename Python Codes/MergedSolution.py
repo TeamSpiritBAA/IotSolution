@@ -27,7 +27,7 @@ def insert_projectdata(ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts):
         conn.commit()
         cur.close()
         print("success")
-    except (Exception, psycopg2.DatabaseError) as error: //trying to replace existing data
+    except (Exception, psycopg2.DatabaseError) as error: #trying to replace existing data
         try:
             print("replacing data")
             conn = conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="password")
