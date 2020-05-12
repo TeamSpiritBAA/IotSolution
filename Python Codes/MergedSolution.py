@@ -18,7 +18,7 @@ def insert_projectdata(ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts):
     try:
         print("trying")
         # connect to the PostgreSQL database
-        conn =  conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="igra1122")
+        conn =  conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="password")
         # create a new cursor
         cur = conn.cursor()
         # execute the INSERT statement
@@ -30,7 +30,7 @@ def insert_projectdata(ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts):
     except (Exception, psycopg2.DatabaseError) as error:
         try:
             print("replacing data")
-            conn = conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="igra1122")
+            conn = conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="password")
             cur = conn.cursor()
             cur.execute(query2.format(ID))
             cur.execute(query,data)
