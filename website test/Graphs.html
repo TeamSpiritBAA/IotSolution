@@ -29,6 +29,7 @@ margin-left:400px;
   <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-hover-white w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
   <a href="Home.html" class="w3-bar-item w3-button w3-teal"><i class="fa fa-home w3-margin-right"></i>Home</a>
   <a href="Graphs.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Graphs</a>
+  <a href="Graphs.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Map</a>
   <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-teal" title="Search"><i class="fa fa-search"></i></a>
  </div>
 </div>
@@ -72,6 +73,7 @@ new Chart(ctxt, {
         data: [24,23.7,23.8,24.5,25,25.1,25.2,30,28,27],
         label: "Temperature",
         borderColor: "#ff5733",
+		pointBackgroundColor: "#dc222a",
         fill: false
       }
     ]
@@ -88,6 +90,7 @@ new Chart(ctxh, {
         data: [34,40,42,41,40,39,38,45,50,30],
         label: "Humidity",
         borderColor: "#3e95cd",
+		pointBackgroundColor: "#406ee8",
         fill: false
       }
     ]
@@ -104,6 +107,7 @@ new Chart(ctxl, {
         data: [200,300,400,500,600,700,800,900,600,500],
         label: "Lighting",
         borderColor: "#af33ff",
+		pointBackgroundColor: "#962dda",
         fill: false
       }
     ]
