@@ -7,7 +7,7 @@ db = SQLAlchemy(app)
 #@app.route('/hello')
 #@app.route('/hello/<name>')
 #def hello(name=None):
- #   return render_template('/testplate.html',name=name)
+#   return render_template('/testplate.html',name=name)
 #@app.route('/sign-up',methods=["GET","POST"])
 
 class Iotdata(db.Model):
@@ -60,16 +60,31 @@ for i in range(0, len(myIotdata)):
     TSlist.append(ts)
 
 print(TMPlist)
+
 @app.route("/Home.html")
+
 @app.route('/')
 def home():
     return render_template("Home.html")
+
 @app.route('/Readings.html')
 def Readings():
-    return render_template("Readings.html", temp = TMPlist, hum = HUMlist, lum = LUXlist,ID = IDlist[9],Long = Xlist[9], Lat = Ylist[9],lHum = HUMlist[9],lTemp = TMPlist[9],lLight = LUXlist[9],TS = TSlist[9])
+    return render_template("Readings.html",
+                           temp = TMPlist,
+                           hum = HUMlist,
+                           lum = LUXlist,
+                           ID = IDlist[9],
+                           Long = Xlist[9],
+                           Lat = Ylist[9],
+                           lHum = HUMlist[9],
+                           lTemp = TMPlist[9],
+                           lLight = LUXlist[9],
+                           TS = TSlist[9])
+
 @app.route('/Map.html')
 def Map():
     return render_template("Map.html")
+
 @app.route('/Schematics.html')
 def Schematics():
     return render_template("Schematics.html")
