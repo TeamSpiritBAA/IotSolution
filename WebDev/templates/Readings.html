@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>Readings</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+.graphCenterDisplay{
+  margin: auto;
+  width: 65%;
+}
+</style>
+<body id="Readings Page">
+
+
+<!-- Navbar -->
+<div class="w3-top">
+    <div class="w3-bar w3-theme-d2 w3-left-align">
+        <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-hover-white w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
+        <a href="Home.html" class="w3-bar-item w3-button w3-teal"><i class="fa fa-home w3-margin-right"></i>Home</a>
+        <a href="Readings.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Readings</a>
+        <a href="Map.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Map</a>
+        <a href="Schematics.html" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Schematics</a>
+        <a href="#" class="w3-bar-item w3-button w3-hide-small w3-right w3-hover-teal" title="Search"><i class="fa fa-search"></i></a>
+    </div>
+</div>
+<!--Navbar end-->
+
+
+<!-- Work Row -->
+<div class="w3-row-padding w3-padding-64 w3-teal" id="work">
+
+<div style="width:550px; margin: auto; color:black;">
+	<h1 style="text-align:center;">Current Readings</h1>
+	<table border="2px" style="background-color:white;">
+		<tr id="tableColor">
+
+			<th>Longitude</th>
+			<th>Latitude</th>
+			<th>Humidity</th>
+			<th>Temperature</th>
+			<th>Lighting</th>
+			<th>TimeStamp</th>
+		</tr>
+		<tr>
+
+			<td>{{ Long }}</td>
+			<td>{{ Lat }}</td>
+			<td>{{ lHum }}</td>
+			<td>{{ lTemp }}</td>
+			<td>{{ lLight }}</td>
+			<td>{{ TS }}</td>
+		</tr>
+</table>
+</div>
+
+</div>
+
+
+<div>
+	<div class = "graphCenterDisplay w3-padding-64">
+		<canvas id="temperature-chart" width="1000" height="350">
+		</canvas>
+	</div>
+
+	<div class = "graphCenterDisplay w3-padding-64">
+		<canvas id="humidity-chart" width="1000" height="350">
+		</canvas>
+	</div>
+
+	<div class = "graphCenterDisplay w3-padding-64">
+		<canvas id="lighting-chart" width="1000" height="350">
+		</canvas>
+	</div>
+</div>
+</body>
+	
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <!--  Google Maps Plugin    -->
+  <!-- Place this tag in your head or just before your close body tag. -->	
+  <!-- Chart JS -->
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
+
+<script>
+var t = document.getElementById("temperature-chart");
+var h = document.getElementById("humidity-chart");
+var l = document.getElementById("lighting-chart");
+var TMParray = {{ temp }};
+var HUMarray = {{ hum }};
+var LUXarray = {{ lum }};
+var ctxt = t.getContext("2d");
+var ctxh = h.getContext("2d");
+var ctxl = l.getContext("2d");
+
+new Chart(ctxt, {
+  type: 'line',
+  data: {
+    labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+    datasets: [{
+        data: TMParray,
+        label: "Temperature",
+        borderColor: "#ff5733",
+		pointBackgroundColor: "#dc222a",
+        fill: false
+      }
+    ]
+  },
+  options: {
+	 responsive: false
+  }
+});
+
+new Chart(ctxh, {
+  type: 'line',
+  data: {
+    labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+    datasets: [{ 
+        data: HUMarray,
+        label: "Humidity",
+        borderColor: "#3e95cd",
+		pointBackgroundColor: "#406ee8",
+        fill: false
+      }
+    ]
+  },
+  options: {
+	 responsive: false
+  }
+});
+
+new Chart(ctxl, {
+  type: 'line',
+  data: {
+    labels: ["#1","#2","#3","#4","#5","#6","#7","#8","#9","#10"],
+    datasets: [{ 
+        data: LUXarray,
+        label: "Lighting",
+        borderColor: "#af33ff",
+		pointBackgroundColor: "#962dda",
+        fill: false
+      }
+    ]
+  },
+  options: {
+	 responsive: false
+  }
+});
+</script>
