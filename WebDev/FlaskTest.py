@@ -89,30 +89,31 @@ def getData():
   TSlist2 = []
 
   threading.Timer(10, getData).start() #schedules the function to run every 10 seconds to dynamically update the website
-  myIotdata1 = iotdata.query.order_by(iotdata.ts).all()
-  PushData(myIotdata1,IDlist1,HUMlist1,TMPlist1,LUXlist1,Xlist1,Ylist1,TSlist1)
-  myIotdata2 = iotdata2.query.order_by(iotdata2.ts).all()
-  PushData(myIotdata2, IDlist2, HUMlist2, TMPlist2, LUXlist2, Xlist2, Ylist2, TSlist2)
-  db.session.remove()
+  myIotdata1 = iotdata.query.order_by(iotdata.ts).all() #query for the first device
+  PushData(myIotdata1,IDlist1,HUMlist1,TMPlist1,LUXlist1,Xlist1,Ylist1,TSlist1) #processing and storing the data in variables
+  myIotdata2 = iotdata2.query.order_by(iotdata2.ts).all() #query for the second device
+  PushData(myIotdata2, IDlist2, HUMlist2, TMPlist2, LUXlist2, Xlist2, Ylist2, TSlist2) 
+  db.session.remove() #making sure the session limit does not overflow
   
-getData()
+getData() 
 
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
-    db.session.remove()
+    db.session.remove() #making sure the session limit does not overflow
 
 @app.route("/Home.html")
 @app.route('/')
 def home():
     return render_template("Home.html")
-@app.route('/Readings.html')
+   
+@app.route("/Readings.html")
 def Readings():
     return render_template("Readings.html", temp1 = TMPlist1, hum1 = HUMlist1, lum1 = LUXlist1, #First device datasets
                             temp2=TMPlist2, hum2=HUMlist2, lum2=LUXlist2,  #second device datasets
                             lTemp1 = TMPlist1[-1], lHum1 = HUMlist1[-1], lLight1 = LUXlist1[-1],Long1 = Xlist1[-1],Lat1 = Ylist1[-1],TS1 = TSlist1[-1], #first table row
                             lTemp2=TMPlist2[-1], lHum2=HUMlist2[-1], lLight2=LUXlist2[-1], Long2=Xlist2[-1],Lat2=Ylist2[-1], TS2=TSlist2[-1]) #second table row
-@app.route('/Schematics.html')
+@app.route("/Schematics.html")
 def Schematics():
     return render_template("Schematics.html")
 
