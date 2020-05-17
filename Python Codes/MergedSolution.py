@@ -7,7 +7,7 @@ humidity = ""
 xcoor = ""
 ycoor = ""
 lum = ""
-id = 0
+id =0
 
 def insert_projectdata(ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts):
     print("function initialized")
