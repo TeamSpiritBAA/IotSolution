@@ -13,7 +13,7 @@ def insert_projectdata(ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts, Devi
     print("function initialized")
     queryDen = "INSERT INTO iotdata (id, humidity, temperature, lighting, gpsx, gpsy, ts) VALUES (%s, %s, %s, %s, %s, %s, %s);"
     queryVal = "INSERT INTO iotdata2 (id, humidity, temperature, lighting, gpsx, gpsy, ts) VALUES (%s, %s, %s, %s, %s, %s, %s);"
-    DeleteDen = "delete from iotdata where id = {}";
+    DeleteDen = "delete from iotdata where id = {}"; #used for making space for new upcoming data
     DeleteVal = "delete from iotdata2 where id = {}";
     data =  (ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts)
     conn = None
@@ -23,8 +23,8 @@ def insert_projectdata(ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts, Devi
         cur = conn.cursor()
         if(Device == "device1"):
             print("First device")
-            cur.execute(DeleteDen.format(ID))
-            cur.execute(queryDen, data)
+            cur.execute(DeleteDen.format(ID)) #delete the data in a row if a matching ID is already taken
+            cur.execute(queryDen, data) #upload data
         elif(Device == "device2"):
             print("Second device")
             cur.execute(DeleteVal.format(ID))
@@ -45,19 +45,19 @@ def HandlePayload(message):
     for i in range(0,len(separatedmessage)):
         temp = separatedmessage[i]
         if (temp[0]=="T"):
-            temperature = round(float(filterDigits(temp)),2)
+            temperature = round(filterDigits(temp),2)
         elif (temp[0]=="H"):
-            humidity = round(float(filterDigits(temp)),2)
+            humidity = round(filterDigits(temp),2)
         elif (temp[0]=="X"):
-            xcoor = float(filterDigits(temp))
+            xcoor = filterDigits(temp)
         elif (temp[0]=="Y"):
-            ycoor = float(filterDigits(temp))
+            ycoor = filterDigits(temp)
         elif (temp[0]=="L"):
-            lum = int(float(filterDigits(temp)))
+            lum = int(filterDigits(temp))
 
 
 def filterDigits(a):
-    temp2 = ''.join(digit for digit in a if digit.isdigit() or digit == ".")
+    temp2 = float(''.join(digit for digit in a if digit.isdigit() or digit == "."))
     return temp2
 
 def on_connect(client, userdata, flags, rc):
@@ -69,21 +69,15 @@ def on_connect(client, userdata, flags, rc):
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
     global id
-    message = open("message.txt", "w+") #create a file in the current folder that will hold the received status
     topicRecieved = msg.topic
-    print(topicRecieved)
+    device = topicRecieved.split("/")[1]
     messageReceived = msg.payload.decode()
-    print(messageReceived)
     HandlePayload(messageReceived)
     print(temperature, humidity, ycoor, xcoor, lum)
-    id += 1
+    id += 1 #going through the 10 database rows to fill
     if id > 10:
         id = 1
-    if(topicRecieved == "IDDeniss/esptest"):
-        insert_projectdata(id, humidity, temperature, lum, xcoor, ycoor, datetime.now(),"device1")
-    if (topicRecieved == "IDDeniss/device2"):
-        insert_projectdata(id, humidity, temperature, lum, xcoor, ycoor, datetime.now(),"device2")
-    message.write(messageReceived) #write the message into the text file
+        insert_projectdata(id, humidity, temperature, lum, xcoor, ycoor, datetime.now(),device)
 
 client = mqtt.Client()
 client.connect("test.mosquitto.org", 1883, 60)
@@ -92,6 +86,4 @@ client.on_message = on_message
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
-# Other loop*() functions are available that give a threaded interface and a
-# manual interface.
 client.loop_forever()
