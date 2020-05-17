@@ -1,13 +1,11 @@
 from flask import Flask,request,render_template,redirect
 from flask_sqlalchemy import SQLAlchemy
-import psycopg2
 import threading
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:igra1122@localhost/projectData' #edit as in: username:password@ip/database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:igra1122@localhost/projectData' #edit as in: username:password@host/database
 db = SQLAlchemy(app)
 
-class Iotdata(db.Model):
-   __tablename__ = 'iotdata'
+class iotdata(db.Model): #first device table class
    id = db.Column('id', db.Integer, primary_key = True)
    humidity = db.Column(db.Numeric(20,2))
    temperature= db.Column(db.Numeric(20,2))
@@ -15,21 +13,11 @@ class Iotdata(db.Model):
    gpsx = db.Column(db.Numeric(20,6))
    gpsy = db.Column(db.Numeric(20,6))
    ts = db.Column(db.TIMESTAMP)
-
-   def __init__(self, id, humidity, temperature, lighting, gpsx, gpsy,ts):
-      self.id = id
-      self.humidity = humidity
-      self.temperature = temperature
-      self.lighting = lighting
-      self.gpsx = gpsx
-      self.gpsy = gpsy
-      self.ts = ts
 
    def __repr__(self):
        return f"{self.id},{self.humidity},{self.temperature},{self.lighting},{self.gpsx},{self.gpsy},{self.ts}"
 
-class Iotdata2(db.Model):
-   __tablename__ = 'iotdata2'
+class iotdata2(db.Model): #second device table class
    id = db.Column('id', db.Integer, primary_key = True)
    humidity = db.Column(db.Numeric(20,2))
    temperature= db.Column(db.Numeric(20,2))
@@ -37,15 +25,6 @@ class Iotdata2(db.Model):
    gpsx = db.Column(db.Numeric(20,6))
    gpsy = db.Column(db.Numeric(20,6))
    ts = db.Column(db.TIMESTAMP)
-
-   def __init__(self, id, humidity, temperature, lighting, gpsx, gpsy,ts):
-      self.id = id
-      self.humidity = humidity
-      self.temperature = temperature
-      self.lighting = lighting
-      self.gpsx = gpsx
-      self.gpsy = gpsy
-      self.ts = ts
 
    def __repr__(self):
        return f"{self.id},{self.humidity},{self.temperature},{self.lighting},{self.gpsx},{self.gpsy},{self.ts}"
@@ -90,8 +69,8 @@ def PushData(dataToSplit,idlist,humlist,tmplist,luxlist,xlist,ylist,tslist):
 
 def getData():
   global myIotdata1,myIotdata2,IDlist1,HUMlist1,TMPlist1,LUXlist1,Xlist1,Ylist1,TSlist1,IDlist2,HUMlist2,TMPlist2,LUXlist2,Xlist2,Ylist2,TSlist2
+  #resetting the lists
   myIotdata1 = []
-  myIotdata2 = []
   IDlist1 = []
   HUMlist1 = []
   TMPlist1 = []
@@ -100,6 +79,7 @@ def getData():
   Ylist1 = []
   TSlist1 = []
 
+  myIotdata2 = []
   IDlist2 = []
   HUMlist2 = []
   TMPlist2 = []
@@ -108,13 +88,13 @@ def getData():
   Ylist2 = []
   TSlist2 = []
 
-  print("updating")
-  threading.Timer(10, getData).start()
-  myIotdata1 = Iotdata.query.all()
+  threading.Timer(10, getData).start() #schedules the function to run every 10 seconds to dynamically update the website
+  myIotdata1 = iotdata.query.order_by(iotdata.ts).all()
   PushData(myIotdata1,IDlist1,HUMlist1,TMPlist1,LUXlist1,Xlist1,Ylist1,TSlist1)
-  myIotdata2 = Iotdata2.query.all()
+  myIotdata2 = iotdata2.query.order_by(iotdata2.ts).all()
   PushData(myIotdata2, IDlist2, HUMlist2, TMPlist2, LUXlist2, Xlist2, Ylist2, TSlist2)
   db.session.remove()
+  
 getData()
 
 
@@ -138,7 +118,7 @@ def Schematics():
 
 @app.route("/Map.html")
 def Map():
-    return render_template("Map.html", Long = [Xlist1[-1],Xlist2[-2]], Lat = [Ylist1[-1],Ylist2[-1]])
+    return render_template("Map.html", Long = [Xlist1[-1],Xlist2[-1]], Lat = [Ylist1[-1],Ylist2[-1]])
 
 if __name__=="__main__":
     app.run(debug=False)
