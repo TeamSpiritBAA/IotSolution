@@ -7,38 +7,33 @@ humidity = ""
 xcoor = ""
 ycoor = ""
 lum = ""
-id =0
+id = 0
 
-def insert_projectdata(ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts):
+def insert_projectdata(ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts, Device):
     print("function initialized")
-    query = "INSERT INTO iotdata (id, humidity, temperature, lighting, gpsx, gpsy, ts) VALUES (%s, %s, %s, %s, %s, %s, %s);"
-    query2 = "delete from iotdata where id = {}";
+    queryDen = "INSERT INTO iotdata (id, humidity, temperature, lighting, gpsx, gpsy, ts) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+    queryVal = "INSERT INTO iotdata2 (id, humidity, temperature, lighting, gpsx, gpsy, ts) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+    DeleteDen = "delete from iotdata where id = {}";
+    DeleteVal = "delete from iotdata2 where id = {}";
     data =  (ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts)
     conn = None
     try:
-        print("trying")
-        # connect to the PostgreSQL database
-        conn =  conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="password")
-        # create a new cursor
+        print("replacing data")
+        conn = conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="igra1122")
         cur = conn.cursor()
-        # execute the INSERT statement
-        cur.execute(query, data)
-        # commit the changes to the database
+        if(Device == "device1"):
+            print("First device")
+            cur.execute(DeleteDen.format(ID))
+            cur.execute(queryDen, data)
+        elif(Device == "device2"):
+            print("Second device")
+            cur.execute(DeleteVal.format(ID))
+            cur.execute(queryVal, data)
         conn.commit()
         cur.close()
         print("success")
-    except (Exception, psycopg2.DatabaseError) as error: #trying to replace existing data
-        try:
-            print("replacing data")
-            conn = conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="password")
-            cur = conn.cursor()
-            cur.execute(query2.format(ID))
-            cur.execute(query,data)
-            conn.commit()
-            cur.close()
-            print("success")
-        except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
+    except (Exception, psycopg2.DatabaseError) as error:
+        print(error)
     finally:
         if conn is not None:
             conn.close()
@@ -75,13 +70,19 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     global id
     message = open("message.txt", "w+") #create a file in the current folder that will hold the received status
+    topicRecieved = msg.topic
+    print(topicRecieved)
     messageReceived = msg.payload.decode()
+    print(messageReceived)
     HandlePayload(messageReceived)
     print(temperature, humidity, ycoor, xcoor, lum)
     id += 1
     if id > 10:
         id = 1
-    insert_projectdata(id,humidity,temperature,lum,xcoor,ycoor,datetime.now())
+    if(topicRecieved == "IDDeniss/esptest"):
+        insert_projectdata(id, humidity, temperature, lum, xcoor, ycoor, datetime.now(),"device1")
+    if (topicRecieved == "IDDeniss/device2"):
+        insert_projectdata(id, humidity, temperature, lum, xcoor, ycoor, datetime.now(),"device2")
     message.write(messageReceived) #write the message into the text file
 
 client = mqtt.Client()
