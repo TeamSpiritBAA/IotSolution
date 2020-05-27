@@ -1,31 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-<title>Map</title>
+<title>Home Page</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 <link rel="stylesheet" href="https://www.w3schools.com/lib/w3-theme-black.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<title>OpenLayers Simplest Example</title>
+
 <style>
-    .container {
-  position: relative;
-  text-align: center;
-  color: white;
-}
-
-.centered {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-}
+    .Map{
+        margin-top:100px
+        }
 </style>
-<body id="Map Page">
-
 
 <!-- Navbar -->
-<div class="w3-top">
+<div class="w3-top" style=position:relative >
     <div class="w3-bar w3-theme-d2 w3-left-align">
         <a class="w3-bar-item w3-button w3-hide-medium w3-hide-large w3-right w3-hover-white w3-theme-d2" href="javascript:void(0);" onclick="openNav()"><i class="fa fa-bars"></i></a>
         <a href="Home.html" class="w3-bar-item w3-button w3-teal"><i class="fa fa-home w3-margin-right"></i>Home</a>
@@ -37,35 +27,50 @@
 </div>
 <!--Navbar end-->
 
+<div id="Map" style="height:100vh;position:relative"></div>
+<script src="static/OpenLayers.js"></script>
+<script>
+    var map;
+function init() {
+    map = new OpenLayers.Map("Map");
+    map.addLayer(new OpenLayers.Layer.OSM());
 
-<!-- Image Header -->
-<div class="w3-display-container w3-animate-opacity w3-center">
-    <img src="Sensor1.JPG" style="width:100%;min-height:350px;max-height:600px;">
-    <div class="centered"><h2 style="color:black">Project3 - Sensors in Study Rooms</h2>
+    var gpsX = {{ Long }};
+    var gpsY = {{ Lat }};
 
-        <p style="color:black">Meet the awesome creators of this website</p>
-        <p style="color:black">>Yusuf Eroglu<</p>
-        <p style="color:black">>Valentin Zlate<</p>
-        <p style="color:black">>Dennis Puzirev<</p>
-        <p style="color:black">>Alexander M. Dimitrov<</p>
-        <p style="color:black">>Dan Grønnebæk<</p>
-    </div>
-</div>
+    var lonLat1 = new OpenLayers.LonLat(gpsX[0], gpsY[0])
+          .transform(
+            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+            map.getProjectionObject() // to Spherical Mercator Projection
+          );
+
+    var zoom=8;
+
+    var markers = new OpenLayers.Layer.Markers("Markers");
+    map.addLayer(markers);
+
+    markers.addMarker(new OpenLayers.Marker(lonLat1));
+
+    var lonLat2 = new OpenLayers.LonLat(gpsX[1], gpsY[1])
+          .transform(
+            new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+            map.getProjectionObject() // to Spherical Mercator Projection
+          );
+    markers.addMarker(new OpenLayers.Marker(lonLat2));
 
 
-<!-- Work Row -->
-<div class="w3-row-padding w3-padding-64 w3-theme-l1" id="work">
-<h1>This is a template for the iot website<h1>
-<div class="w3-quarter">
-</div>
-<div class="w3-quarter">
-<div class="w3-card w3-white">
-<h2>Some introductory text</h2>
-  <div class="w3-container">
+    map.setCenter (lonLat2, zoom);
+}
 
-  </div>
-  </div>
-</div>
-
-</div>
-</body>
+function addMarker(int)
+{
+    var lonLat1 = new OpenLayers.LonLat(gpsX[int], gpsY[int])
+    .transform(
+      new OpenLayers.Projection("EPSG:4326"), // transform from WGS 1984
+      map.getProjectionObject() // to Spherical Mercator Projection
+    );
+    markers.addMarker(new OpenLayers.Marker(lonLat1));
+}
+</script>
+    <body onload="init()">
+    </body>
