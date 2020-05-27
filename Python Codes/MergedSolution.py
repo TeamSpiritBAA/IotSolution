@@ -9,7 +9,7 @@ class databaseCommunication:
     def __init__(self,ID,Humidity,Temperature,Lighting,gpsx,gpsy,ts,Device):
         self.ID = ID
         self.Device = Device
-        self.data =  (ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts)
+        self.sensordata =  (ID, Humidity, Temperature, Lighting, gpsx, gpsy, ts)
     def insert_projectdata(self):
         print("function initialized")
 
@@ -21,16 +21,16 @@ class databaseCommunication:
         conn = None
         try:
             print("replacing data")
-            conn = conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="igra1122")
+            conn = conn = psycopg2.connect(host="localhost", database="projectData", user="postgres", password="igra1122") #change to reflect your setup
             cur = conn.cursor()
             if(self.Device == "device1"):
                 print("First device")
                 cur.execute(DeleteDen.format(self.ID)) #delete the data in a row if a matching ID is already taken
-                cur.execute(queryDen, self.data) #upload data
+                cur.execute(queryDen, self.sensordata) #upload data
             elif(self.Device == "device2"):
                 print("Second device")
                 cur.execute(DeleteVal.format(self.ID))
-                cur.execute(queryVal, self.data)
+                cur.execute(queryVal, self.sensordata)
             conn.commit()
             cur.close()
             print("success")
@@ -42,11 +42,11 @@ class databaseCommunication:
 
 class ProcessMessages:
     def __init__(self,message):
-        self.message = message
+        self.__message = message
 
-    def HandlePayload(self): #method for separating the incoming mqtt string from the embedded system into corresponding variables
+    def SplitPayload(self): #method for separating the incoming mqtt string from the embedded system into corresponding variables
         global temperature,humidity,xcoor,ycoor,lum
-        separatedmessage = self.message.split(",")
+        separatedmessage = self.__message.split(",")
         for i in range(0,len(separatedmessage)):
             temp = separatedmessage[i]
             if (temp[0]=="T"):
@@ -65,7 +65,7 @@ class ProcessMessages:
         temp2 = float(''.join(digit for digit in a if digit.isdigit() or digit == "."))
         return temp2
 
-class MQTTclass(mqtt.Client):
+class myMQTTclient(mqtt.Client):
     # The callback for when the client receives a CONNACK response from the server.
     def on_connect(self,client, userdata, flags, rc):
         print("Connected with result code "+str(rc))
@@ -80,7 +80,7 @@ class MQTTclass(mqtt.Client):
         device = topicRecieved.split("/")[-1] #part of the topic corresponding to the device
         messageReceived = msg.payload.decode()
         toVariables = ProcessMessages(messageReceived)
-        toVariables.HandlePayload() #separates payload string
+        toVariables.SplitPayload() #separates payload string
         print(temperature, humidity, ycoor, xcoor, lum)
         id += 1 #going through the 10 database rows to fill
         if id > 10:
@@ -91,7 +91,7 @@ class MQTTclass(mqtt.Client):
 
 
 if __name__ == '__main__':
-    client = MQTTclass()
+    client = myMQTTclient()
     client.connect("mqtt.eclipse.org", 1883, 60)
     # Blocking call that processes network traffic, dispatches callbacks and
     # handles reconnecting.
